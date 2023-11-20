@@ -40,8 +40,9 @@ class SheetQueryBuilder {
    * @param {Function} fn
    * @return {SheetQueryBuilder}
    */
-  where(fn) {
+  where(fn, lastDataRow) { // optional lastDataRow for patch
     this.whereFn = fn;
+    this.lastDataRow = lastDataRow
     return this;
   }
   /**
@@ -69,7 +70,10 @@ class SheetQueryBuilder {
         return [];
       }
       const rowValues = [];
-      const sheetValues = sheet.getDataRange().getValues();
+      const dataRange = this.lastDataRow ? 
+                           sheet.getRange(1,1, this.lastDataRow, sheet.getLastColumn())
+                           :sheet.getDataRange();
+      const sheetValues = dataRange.getValues();
       const numCols = sheetValues[0] ? sheetValues[0].length : 0;
       const numRows = sheetValues.length;
       const headings = (this._sheetHeadings = sheetValues[zh] || []);
